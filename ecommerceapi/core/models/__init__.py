@@ -1,1 +1,1 @@
-from product import * # NOQA
+from ecommerceapi.core.models.product import *

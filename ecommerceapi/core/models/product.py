@@ -10,7 +10,7 @@ class Product(models.Model):
     name = models.CharField(max_length=15)
     desc = models.CharField(max_length=150)
     domain = models.ForeignKey(Domain, on_delete=models.CASCADE)
-    value = models.DecimalField()
+    value = models.DecimalField(decimal_places=3, max_digits=15)
 
     def __repr__(self):
         return self.name

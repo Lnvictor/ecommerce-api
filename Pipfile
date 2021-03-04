@@ -7,10 +7,13 @@ name = "pypi"
 django = "*"
 python-decouple = "*"
 djangorestframework = "*"
-pytest = "*"
 dj-database-url = "*"
+black = "*"
+psycopg2-binary = "*"
+pytest-django = "*"
 
 [dev-packages]
+ipdb = "*"
 
 [requires]
 python_version = "3.8"

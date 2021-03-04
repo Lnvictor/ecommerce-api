@@ -1,1 +1,1 @@
-from product_serializer import *
+from ecommerceapi.core.serializers.product_serializer import * # NOQA
