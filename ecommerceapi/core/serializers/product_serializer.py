@@ -1,3 +1,12 @@
+"""
+Models  Serializers implementation
+
+Serializers has the aim to convert objects to
+json/xml and vice-versa
+
+The implementation was made using django rest framework serializers
+"""
+
 from rest_framework import serializers
 
 from ecommerceapi.core.models import Product, Domain
