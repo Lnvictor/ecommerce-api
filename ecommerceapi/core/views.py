@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from ecommerceapi.core.exceptions import InvalidProductInformation, InvalidDomainInformation
 from ecommerceapi.core.facade import get_products_from_domain
 from ecommerceapi.core.models import Product, Domain
 from ecommerceapi.core.serializers import ProductSerializer, DomainSerializer
@@ -30,7 +32,12 @@ class DomainViewSet(viewsets.ViewSet):
     @staticmethod
     def create(request, *args, **kwargs):
         serializer = DomainSerializer(data=request.data)
-        serializer.is_valid()
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError:
+            raise InvalidProductInformation
+
         serializer.save()
 
         return Response(serializer.data)
@@ -79,7 +86,12 @@ class ProductViewSet(viewsets.ViewSet):
     @staticmethod
     def create(request, *args, **kwargs):
         serializer = ProductSerializer(data=request.data)
-        serializer.is_valid()
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except ValidationError:
+            raise InvalidProductInformation()
+
         serializer.save()
 
         return Response(serializer.data)

@@ -1,5 +1,4 @@
 import pytest
-from django.test import Client
 from django.urls import reverse
 
 from ecommerceapi.core.tests.test_domain import create_sample_domain
