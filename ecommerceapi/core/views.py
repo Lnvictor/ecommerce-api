@@ -56,6 +56,7 @@ class DomainViewSet(viewsets.ViewSet):
     def get_products(self, pk=None):
         import ipdb;ipdb.sset_trace()
         serializer = ProductSerializer(get_products_from_domain(pk), many=True)
+
         return Response(serializer.data)
 
 
