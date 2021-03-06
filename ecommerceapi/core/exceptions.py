@@ -4,3 +4,7 @@ class InvalidProductInformation(Exception):
 
 class InvalidDomainInformation(Exception):
     pass
+
+
+class ModelDoesNotExists(Exception):
+    pass
