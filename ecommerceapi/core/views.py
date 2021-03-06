@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
@@ -7,6 +8,7 @@ from ecommerceapi.core.exceptions import InvalidProductInformation, InvalidDomai
 from ecommerceapi.core.facade import get_products_from_domain
 from ecommerceapi.core.models import Product, Domain
 from ecommerceapi.core.serializers import ProductSerializer, DomainSerializer
+from ecommerceapi.providers.models import Provider
 
 
 class DomainViewSet(viewsets.ViewSet):
@@ -111,3 +113,18 @@ class ProductViewSet(viewsets.ViewSet):
         product.delete()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+    def get_products_from_provider(self, request, pk: int):
+        """
+        Get all products that one provider has been provided
+        """
+        
+        provider = get_object_or_404(Provider.objects.all(), pk=pk)
+        
+        serializer = ProductSerializer(
+            Product.objects.filter(provider=provider).all(),
+            many=True
+        )
+
+        return Response(data=serializer.data)

@@ -1,1 +1,1 @@
-from ecommerceapi.core.models.product import *
+from ecommerceapi.core.models.product import Product, Domain
