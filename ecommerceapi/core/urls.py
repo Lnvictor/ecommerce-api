@@ -1,6 +1,6 @@
 from django.urls import path
 
-from ecommerceapi.core.views import DomainViewSet, ProductViewSet
+from ecommerceapi.core.views import DomainViewSet, ProductViewSet, CsvFileViews
 
 app_name = "core"
 
@@ -38,4 +38,6 @@ urlpatterns = [
         ProductViewSet.as_view({"get": "get_products_from_provider"}),
         name="get_from_provider",
     ),
+
+    path("upload-from-csv", CsvFileViews().parse_csv, name="upload_csv")
 ]

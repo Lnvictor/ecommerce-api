@@ -1,6 +1,8 @@
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, views
+from rest_framework.parsers import FileUploadParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -9,6 +11,9 @@ from ecommerceapi.core.facade import get_products_from_domain
 from ecommerceapi.core.models import Product, Domain
 from ecommerceapi.core.serializers import ProductSerializer, DomainSerializer
 from ecommerceapi.providers.models import Provider
+
+from collections import deque
+from decimal import Decimal
 
 
 class DomainViewSet(viewsets.ViewSet):
@@ -128,3 +133,37 @@ class ProductViewSet(viewsets.ViewSet):
         )
 
         return Response(data=serializer.data)
+
+
+class CsvFileViews(views.APIView):
+    """
+    This class contains methods to lead
+    with csv files that provides products information.
+    The aim here is load products from provided csv file
+    and insert it into database.
+    """
+
+    @csrf_exempt
+    def parse_csv(self, request):
+        records = []
+        text = deque(request.readlines())
+        headers = text.popleft().decode('ascii').split(",")
+        
+        for record in text:
+            tmp = {}
+            attrs = record.decode('ascii').split(",")
+            for i in range(len(headers)):
+                header = headers[i].strip().strip('\n')
+                numeric_headers = {'domain': int, 'value': Decimal, 'quantity': int}
+                
+                if header in numeric_headers.keys():
+                    tmp[header] = numeric_headers[header](attrs[i].strip())
+                else:
+                    tmp[header] = attrs[i]
+
+            records.append(tmp)
+
+        serializer = ProductSerializer(data=records, many=True)
+        serializer.is_valid()
+        serializer.save()
+        return JsonResponse(records, safe=False, status=201)

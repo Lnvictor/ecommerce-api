@@ -14,6 +14,7 @@ def get_products_from_domain(domain: int):
     return Product.objects.filter(domain=domain).all()
 
 
-def get_products_from_csv_file(file):
-    # TODO: Aprender como lidar com arquivos de upload no django
-    pass
+
+class CsvFileHandler:
+    def parse_products_from_csv_file(self, file):
+        pass    
