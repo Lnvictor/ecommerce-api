@@ -12,6 +12,11 @@ application database calling a function that consumes provider's API
 from django.db import models
 
 
+class GiantBombManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(name='GiantBomb')
+
+
 class Provider(models.Model):
     name = models.CharField(max_length=15)
     desc = models.CharField(max_length=150)
@@ -26,6 +31,10 @@ class Provider(models.Model):
     address = models.CharField(max_length=40)
     api_link = models.TextField(null=True)
     website_link = models.TextField(null=True)
+
+    # managers, one by Provider API
+    objects = models.Manager()
+    giant_bomb = GiantBombManager()
 
     def __str__(self):
         return self.cnpj

@@ -9,3 +9,6 @@ class ProviderHookClassNotImplemented(Exception):
 
 class InvalidProviderData(Exception):
     pass
+
+class NotFoundProvider(Exception):
+    pass
