@@ -85,7 +85,7 @@ class ProductViewSet(viewsets.ViewSet):
 
     @staticmethod
     def retrieve(request, pk=None, **kwargs):
-        product = get_object_or_404(Product.objects.filter(pk=pk).get(), pk=pk)
+        product = get_object_or_404(Product.objects.all(), pk=pk)
         serializer = ProductSerializer(product)
 
         return Response(serializer.data)
