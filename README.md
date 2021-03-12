@@ -37,6 +37,20 @@ Just run the following command and have fun :heart:
     python manage.py runserver
 ```
 
+## Making requests
+To send requests to any API endpoint, you should has an api_key,
+you can create with this following commands:
+
+```console
+python manage.py shell
+```
+
+Then create your key:
+```python
+from rest_framework_api_key.models import APIKey
+api_key, key = APIKey.objects.create_key(name="my-remote-service")
+```
+
 ## References
 
 - [Django Official Documentation](https://docs.djangoproject.com/en/3.1/)
