@@ -1,6 +1,5 @@
 from decouple import config
 import requests
-from django.urls import reverse
 
 from ecommerceapi.core.models import Domain
 from ecommerceapi.providers.exceptions import NotFoundProvider
@@ -8,7 +7,6 @@ from ecommerceapi.providers.facade import ProviderController, ProviderHook
 from ecommerceapi.providers.models import Provider
 
 from typing import List
-import json
 
 API_URL = "http://www.giantbomb.com/api/games/"
 API_KEY = config('GIANT_BOMB_API_KEY')

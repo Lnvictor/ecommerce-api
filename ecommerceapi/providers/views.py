@@ -8,7 +8,7 @@ from rest_framework import viewsets, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from ecommerceapi.providers.ProviderHooks.GiantBombProvider import giant_bomb_hook
+from ecommerceapi.providers.ProviderHooks import giant_bomb_hook
 from ecommerceapi.providers.exceptions import InvalidProviderData
 from ecommerceapi.providers.models import Provider
 from ecommerceapi.providers.serializers.provider_serializer import ProviderSerializer
