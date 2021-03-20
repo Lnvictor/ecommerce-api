@@ -6,6 +6,7 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
+from ecommerceapi.core.commons import create, list, retrieve, update
 from ecommerceapi.core.exceptions import InvalidProductInformation, InvalidDomainInformation
 from ecommerceapi.core.facade import get_products_from_domain
 from ecommerceapi.core.models import Product, Domain
@@ -23,41 +24,39 @@ class DomainViewSet(viewsets.ViewSet):
 
     @staticmethod
     def list(request, *args, **kwargs):
-        queryset = Domain.objects.all()
-        serializer = DomainSerializer(queryset, many=True)
-
-        return Response(serializer.data)
+        return Response(
+            list(Domain.objects.all(), DomainSerializer).data
+        )
 
     @staticmethod
     def retrieve(request, pk=None, **kwargs):
-        queryset = Domain.objects.all()
-        domain = get_object_or_404(queryset, pk=pk)
-        serializer = DomainSerializer(domain)
-
-        return Response(serializer.data)
+        return Response(
+            retrieve(
+                Domain.objects.all(), pk, DomainSerializer
+            ).data
+        )
 
     @staticmethod
     def create(request, *args, **kwargs):
-        serializer = DomainSerializer(data=request.data)
-
         try:
-            serializer.is_valid(raise_exception=True)
+            return Response(
+                create(
+                    request.data, DomainSerializer
+                )
+            )
         except ValidationError:
-            raise InvalidProductInformation
-
-        serializer.save()
-
-        return Response(serializer.data)
+            raise InvalidDomainInformation()
 
     @staticmethod
     def update(request, pk=None, *args, **kwargs):
-        domain = Domain.objects.filter(pk=pk).get()
-        serializer = DomainSerializer(data=request.data)
-        serializer.is_valid()
-        serializer.update(domain, request.data)
-        domain.save()
-
-        return Response(serializer.data)
+        try:
+            return Response(
+                update(
+                    request.data, Domain.objects.all(), pk, DomainSerializer
+                ).data
+            )
+        except ValidationError:
+            raise InvalidDomainInformation()
 
     @staticmethod
     def destroy(request, pk=None, *args, **kwargs):
@@ -68,6 +67,7 @@ class DomainViewSet(viewsets.ViewSet):
 
     @staticmethod
     def get_products(self, pk=None):
+        # -> Maybe this doesn't works very well
         import ipdb;ipdb.sset_trace()
         serializer = ProductSerializer(get_products_from_domain(pk), many=True)
 
@@ -80,37 +80,39 @@ class ProductViewSet(viewsets.ViewSet):
 
     @staticmethod
     def list(request, *args, **kwargs):
-        serializer = ProductSerializer(Product.objects.all(), many=True)
-        return Response(serializer.data)
+        return Response(
+            list(Product.objects.all(), ProductSerializer).data
+        )
 
     @staticmethod
     def retrieve(request, pk=None, **kwargs):
-        product = get_object_or_404(Product.objects.all(), pk=pk)
-        serializer = ProductSerializer(product)
-
-        return Response(serializer.data)
+        return Response(
+            retrieve(
+                Product.objects.all(), pk, ProductSerializer
+            ).data
+        )
 
     @staticmethod
     def create(request, *args, **kwargs):
-        serializer = ProductSerializer(data=request.data)
-
         try:
-            serializer.is_valid(raise_exception=True)
+            return Response(
+                create(
+                    request.data, ProductSerializer
+                )
+            )
         except ValidationError:
             raise InvalidProductInformation()
 
-        serializer.save()
-
-        return Response(serializer.data)
-
     @staticmethod
     def update(request, pk=None, *args, **kwargs):
-        serializer = ProductSerializer(data=request.data)
-        product = Product.objects.filter(pk=pk).get()
-        serializer.update(product, request.data)
-        product.save()
-
-        return Response(request.data)
+        try:
+            return Response(
+                update(
+                    request.data, Product.objects.all(), pk, ProductSerializer
+                ).data
+            )
+        except ValidationError:
+            raise InvalidProductInformation()
 
     @staticmethod
     def destroy(request, pk=None, *args, **kwargs):
