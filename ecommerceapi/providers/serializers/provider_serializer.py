@@ -6,4 +6,4 @@ from ecommerceapi.providers.models import Provider
 class ProviderSerializer(ModelSerializer):
     class Meta:
         model = Provider
-        fields = '__all__'
+        fields = "__all__"

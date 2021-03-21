@@ -8,12 +8,18 @@ Common Rest views behaviours
 from django.shortcuts import get_object_or_404
 from rest_framework.serializers import ModelSerializer
 
-from ecommerceapi.core.exceptions import InvalidDomainInformation, InvalidProductInformation
+from ecommerceapi.core.exceptions import (
+    InvalidDomainInformation,
+    InvalidProductInformation,
+)
 
 
 def create(data, Serializer) -> ModelSerializer:
+    import ipdb
+
+    ipdb.sset_trace()
     serializer = Serializer(data=data)
-    serializer.is_valid(raises_exception=True)
+    serializer.is_valid(raise_exception=True)
     serializer.save()
 
     return serializer
@@ -35,4 +41,3 @@ def update(data, queryset, pk, Serializer) -> ModelSerializer:
     serializer.update(obj, data)
 
     return serializer
-

@@ -1,84 +1,92 @@
 """
-TODO
-    -> Fazer transição de carrinho(Car) pra Pedido(Order)
+--> DONE <--
+    -> Fazer a lógica de adicionar produtos em um determinado carrinho
+    -> Fazer transição de carrinho(Car) pra Pedido(Order) ...
+
+--> TODO <--
 """
 
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse
 from rest_framework import viewsets
-from rest_framework.response import Response
+from rest_framework.response import Response, responses
 from rest_framework.exceptions import ValidationError
 
 from ecommerceapi.billings.models import Car, Order
 from ecommerceapi.billings.serializers import CarSerializer, OrderSerializer
 from ecommerceapi.billings.exceptions import NonePkProvided
 from ecommerceapi.core.commons import create, list, retrieve, update
+from ecommerceapi.billings.controllers import BillingsController
 
 
 class CarViewSet(viewsets.ViewSet):
     class Meta:
         model = Car
 
-
     def create(self, request):
         try:
-            return Response(
-                create(request.data, CarSerializer).data
-            )
+            return Response(create(request.data, CarSerializer).data)
         except ValidationError:
-            raise ValidationError('BAD Car information')
-    
-    def retrieve(self, request, pk: int=None):
-        return Response(
-            retrieve(
-                Car.objects.all(), pk, CarSerializer
-            ).data
-        )
+            raise ValidationError("BAD Car information")
+
+    def retrieve(self, request, pk: int = None):
+        return Response(retrieve(Car.objects.all(), pk, CarSerializer).data)
 
     def list(self, request):
-        return Response(
-            list(
-                Car.objects.all(), CarSerializer
-            ).data
-        )
+        return Response(list(Car.objects.all(), CarSerializer).data)
 
-    def update(self, request, pk: int=None):
-        return Response(
-            update(
-                request.data, Car.objects.all(), pk, CarSerializer
-            ).data
-        )
+    def update(self, request, pk: int = None):
+        return Response(update(request.data, Car.objects.all(), pk, CarSerializer).data)
 
-            
 
 class OrderViewSet(viewsets.ViewSet):
     class Meta:
         model = Order
 
+    def transaction(self, request, pk: int):
+        """
+        Car to Order Transaction
 
-    def create(self, request):
-        try:
-            return Response(
-                create(request.data, OrderSerializer).data
-            )
-        except ValidationError:
-            raise ValidationError('BAD Order information')
-    
-    def retrieve(self, request, pk: int=None):
-        return Response(
-            retrieve(
-                Order.objects.all(), pk, OrderSerializer
-            ).data
-        )
+        request have to has some data
+        """
+        car = CarSerializer(get_object_or_404(Car.objects.all(), pk=pk)).data
+        data = car
+        for k, v in request.data.items():
+            data[k] = v
+
+        serializer = OrderSerializer(data=data)
+        serializer.is_valid()
+        serializer.save()
+
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk: int = None):
+        return Response(retrieve(Order.objects.all(), pk, OrderSerializer).data)
 
     def list(self, request):
-        return Response(
-            list(
-                Order.objects.all(), OrderSerializer
-            ).data
-        )
+        return Response(list(Order.objects.all(), OrderSerializer).data)
 
-    def update(self, request, pk: int=None):
-        return Response(
-            update(
-                request.data, Order.objects.all(), pk, OrderSerializer
-            ).data
-        )
+    # There is no update
+    # def update(self, request, pk: int=None):
+    #     return Response(
+    #         update(
+    #             request.data, Order.objects.all(), pk, OrderSerializer
+    #         ).data
+    #     )
+
+
+@csrf_exempt
+def add_product(request, c_pk: int, pk: int) -> Response:
+    """
+    Adds a new Product on a determined car
+
+    @param c_pk: Car id
+    @param pl: product pk
+
+    @return Response:
+    """
+    BillingsController.add_product(pk, c_pk)
+    data = {"Success": "201"}
+    return JsonResponse(data=data, status=201)

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     'ecommerceapi.core',
     'ecommerceapi.providers',
-    # 'ecommerceapi.billings'
+    'ecommerceapi.billings'
 ]
 
 MIDDLEWARE = [

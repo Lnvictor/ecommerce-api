@@ -1,2 +1,2 @@
-from .car import Car
-from .order import Order
+from ecommerceapi.billings.models.car import Car
+from ecommerceapi.billings.models.order import Order

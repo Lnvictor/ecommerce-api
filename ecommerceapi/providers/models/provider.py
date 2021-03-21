@@ -14,17 +14,14 @@ from django.db import models
 
 class GiantBombManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(name='GiantBomb')
+        return super().get_queryset().filter(name="GiantBomb")
 
 
 class Provider(models.Model):
     name = models.CharField(max_length=15)
     desc = models.CharField(max_length=150)
     domains = models.ManyToOneRel(
-        'core:Domain',
-        field_name="domains",
-        related_name="domains",
-        to="domains"
+        "core:Domain", field_name="domains", related_name="domains", to="domains"
     )
 
     cnpj = models.CharField(max_length=11, unique=True)

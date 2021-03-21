@@ -1,7 +1,5 @@
 from django.db import models
 
-from ecommerceapi.billings.controllers import BillingsController
-
 
 class Car(models.Model):
     """
@@ -15,8 +13,5 @@ class Car(models.Model):
     Order model, also specifies in this app.
     """
 
-    products = models.ManyToOneRel('core.Products', on_delete=models.CASCADE)
-    price = models.DecimalField(
-        default=BillingsController.get_price_of_car(products)
-    )
-
+    products = models.ManyToManyField("core.Product")
+    price = models.DecimalField(decimal_places=2, max_digits=15)

@@ -4,12 +4,15 @@ Billings Controller
 
 @author Victor Pereira
 """
+"""
+--> TODO <---
+    Checar rastreio batendo em um endpoint na API dos correios
+"""
+
 from django.shortcuts import get_object_or_404
 
-from ecommerceapi.billings.models import Order
-from ecommerceapi.billings.models.car import Car
+from ecommerceapi.billings.models import Car, Order
 from ecommerceapi.billings.serializers import OrderSerializer, CarSerializer
-from ecommerceapi.core.models import Product
 
 
 class BillingsController:
@@ -19,12 +22,10 @@ class BillingsController:
 
     @staticmethod
     def get_price_of_car(products):
-        return sum(
-            [product['value'] for product in products]
-        )
+        return sum([product["value"] for product in products])
 
     @staticmethod
-    def add_product(product_id: int, car_id: int):
+    def add_product(product_id: int, car_id: int) -> None:
         """
         Inserts given product to determined billings car
 
@@ -32,11 +33,8 @@ class BillingsController:
         @param car_id: car to achieve the product
         @return: None
         """
-        queryset_products = Product.objects.all()
-        queryset_cars = Car.objects.all()
-        product = get_object_or_404(queryset_products, product_id)
-        car = get_object_or_404(queryset_cars, car_id)
-        car.products.append(product)
+        car = get_object_or_404(Car.objects.all(), pk=car_id)
+        car.products.add(product_id)
 
     @staticmethod
     def get_status_from_correios(order_id):

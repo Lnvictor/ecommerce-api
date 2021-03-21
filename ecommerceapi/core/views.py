@@ -7,7 +7,10 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from ecommerceapi.core.commons import create, list, retrieve, update
-from ecommerceapi.core.exceptions import InvalidProductInformation, InvalidDomainInformation
+from ecommerceapi.core.exceptions import (
+    InvalidProductInformation,
+    InvalidDomainInformation,
+)
 from ecommerceapi.core.facade import get_products_from_domain
 from ecommerceapi.core.models import Product, Domain
 from ecommerceapi.core.serializers import ProductSerializer, DomainSerializer
@@ -24,26 +27,16 @@ class DomainViewSet(viewsets.ViewSet):
 
     @staticmethod
     def list(request, *args, **kwargs):
-        return Response(
-            list(Domain.objects.all(), DomainSerializer).data
-        )
+        return Response(list(Domain.objects.all(), DomainSerializer).data)
 
     @staticmethod
     def retrieve(request, pk=None, **kwargs):
-        return Response(
-            retrieve(
-                Domain.objects.all(), pk, DomainSerializer
-            ).data
-        )
+        return Response(retrieve(Domain.objects.all(), pk, DomainSerializer).data)
 
     @staticmethod
     def create(request, *args, **kwargs):
         try:
-            return Response(
-                create(
-                    request.data, DomainSerializer
-                )
-            )
+            return Response(create(request.data, DomainSerializer))
         except ValidationError:
             raise InvalidDomainInformation()
 
@@ -51,9 +44,7 @@ class DomainViewSet(viewsets.ViewSet):
     def update(request, pk=None, *args, **kwargs):
         try:
             return Response(
-                update(
-                    request.data, Domain.objects.all(), pk, DomainSerializer
-                ).data
+                update(request.data, Domain.objects.all(), pk, DomainSerializer).data
             )
         except ValidationError:
             raise InvalidDomainInformation()
@@ -68,7 +59,9 @@ class DomainViewSet(viewsets.ViewSet):
     @staticmethod
     def get_products(self, pk=None):
         # -> Maybe this doesn't works very well
-        import ipdb;ipdb.sset_trace()
+        import ipdb
+
+        ipdb.sset_trace()
         serializer = ProductSerializer(get_products_from_domain(pk), many=True)
 
         return Response(serializer.data)
@@ -80,26 +73,16 @@ class ProductViewSet(viewsets.ViewSet):
 
     @staticmethod
     def list(request, *args, **kwargs):
-        return Response(
-            list(Product.objects.all(), ProductSerializer).data
-        )
+        return Response(list(Product.objects.all(), ProductSerializer).data)
 
     @staticmethod
     def retrieve(request, pk=None, **kwargs):
-        return Response(
-            retrieve(
-                Product.objects.all(), pk, ProductSerializer
-            ).data
-        )
+        return Response(retrieve(Product.objects.all(), pk, ProductSerializer).data)
 
     @staticmethod
     def create(request, *args, **kwargs):
         try:
-            return Response(
-                create(
-                    request.data, ProductSerializer
-                )
-            )
+            return Response(create(request.data, ProductSerializer))
         except ValidationError:
             raise InvalidProductInformation()
 
@@ -107,9 +90,7 @@ class ProductViewSet(viewsets.ViewSet):
     def update(request, pk=None, *args, **kwargs):
         try:
             return Response(
-                update(
-                    request.data, Product.objects.all(), pk, ProductSerializer
-                ).data
+                update(request.data, Product.objects.all(), pk, ProductSerializer).data
             )
         except ValidationError:
             raise InvalidProductInformation()
@@ -121,17 +102,15 @@ class ProductViewSet(viewsets.ViewSet):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
     def get_products_from_provider(self, request, pk: int):
         """
         Get all products that one provider has been provided
         """
-        
+
         provider = get_object_or_404(Provider.objects.all(), pk=pk)
-        
+
         serializer = ProductSerializer(
-            Product.objects.filter(provider=provider).all(),
-            many=True
+            Product.objects.filter(provider=provider).all(), many=True
         )
 
         return Response(data=serializer.data)
@@ -149,15 +128,15 @@ class CsvFileViews(views.APIView):
     def parse_csv(self, request):
         records = []
         text = deque(request.readlines())
-        headers = text.popleft().decode('ascii').split(",")
-        
+        headers = text.popleft().decode("ascii").split(",")
+
         for record in text:
             tmp = {}
-            attrs = record.decode('ascii').split(",")
+            attrs = record.decode("ascii").split(",")
             for i in range(len(headers)):
-                header = headers[i].strip().strip('\n')
-                numeric_headers = {'domain': int, 'value': Decimal, 'quantity': int}
-                
+                header = headers[i].strip().strip("\n")
+                numeric_headers = {"domain": int, "value": Decimal, "quantity": int}
+
                 if header in numeric_headers.keys():
                     tmp[header] = numeric_headers[header](attrs[i].strip())
                 else:
