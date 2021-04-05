@@ -6,4 +6,4 @@ class Order(models.Model):
     address = models.JSONField()
     price = models.DecimalField(decimal_places=2, max_digits=15)
     correios_code = models.TextField()
-    delivery_status = models.BooleanField()
+    delivery_status = models.BooleanField(default=False)

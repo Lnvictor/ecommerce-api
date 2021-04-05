@@ -10,10 +10,10 @@ from typing import List
 
 API_URL = "http://www.giantbomb.com/api/games/"
 API_KEY = config("GIANT_BOMB_API_KEY")
-GAMES_DOMAIN = Domain.objects.filter(name="Games").get().id
-
+GAMES_DOMAIN = getattr(Domain.objects.filter(name="Games").first(), "id")
 
 def save_product_data(data: dict) -> bool:
+    # import ipdb;ipdb.sset_trace()
 
     try:
         provider = Provider.giant_bomb.all()[0].id
@@ -33,7 +33,10 @@ def save_product_data(data: dict) -> bool:
         "provider": provider,
     }
 
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": config('REST_KEY')
+    }
 
     requests.post("http://localhost:8000/product/", json=request_data, headers=headers)
 

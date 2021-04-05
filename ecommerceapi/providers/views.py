@@ -31,9 +31,6 @@ class ProviderViewSet(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        import ipdb
-
-        ipdb.sset_trace()
         serializer = ProviderSerializer(data=request.data)
 
         try:

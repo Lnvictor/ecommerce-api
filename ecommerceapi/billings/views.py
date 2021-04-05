@@ -51,14 +51,15 @@ class OrderViewSet(viewsets.ViewSet):
 
         request have to has some data
         """
-        car = CarSerializer(get_object_or_404(Car.objects.all(), pk=pk)).data
-        data = car
+        car = get_object_or_404(Car.objects.all(), pk=pk)
+        data = CarSerializer(car).data
         for k, v in request.data.items():
             data[k] = v
 
         serializer = OrderSerializer(data=data)
         serializer.is_valid()
         serializer.save()
+        car.delete()
 
         return Response(serializer.data)
 
@@ -67,6 +68,20 @@ class OrderViewSet(viewsets.ViewSet):
 
     def list(self, request):
         return Response(list(Order.objects.all(), OrderSerializer).data)
+
+    def finalize(self, request, pk: int) -> Response:
+        """
+        Finalizes a Billing Order and set the monitoring 
+        delivery task queue
+
+        TODO: Test if works
+        """
+        order = get_object_or_404(Order.objects.all(), pk=pk)
+        order_serializer = OrderSerializer(data={"delivery_status": True})
+        order_serializer.is_valid()
+        order_serializer.update(order, order_serializer.data)
+        
+        return Response(data={"message": "Order finalized successfully"})
 
     # There is no update
     # def update(self, request, pk: int=None):

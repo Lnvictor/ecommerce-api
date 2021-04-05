@@ -15,9 +15,6 @@ from ecommerceapi.core.exceptions import (
 
 
 def create(data, Serializer) -> ModelSerializer:
-    import ipdb
-
-    ipdb.sset_trace()
     serializer = Serializer(data=data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -31,6 +28,7 @@ def list(queryset, Serializer) -> ModelSerializer:
 
 def retrieve(queryset, pk, Serializer) -> ModelSerializer:
     obj = get_object_or_404(queryset, pk=pk)
+
     return Serializer(obj)
 
 

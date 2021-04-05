@@ -1,5 +1,7 @@
 from django.db import models
 
+from decimal import Decimal
+
 
 class Car(models.Model):
     """
@@ -13,5 +15,5 @@ class Car(models.Model):
     Order model, also specifies in this app.
     """
 
-    products = models.ManyToManyField("core.Product")
-    price = models.DecimalField(decimal_places=2, max_digits=15)
+    products = models.ManyToManyField("core.Product", default=[])
+    price = models.DecimalField(decimal_places=2, max_digits=15, default=Decimal(0.0))

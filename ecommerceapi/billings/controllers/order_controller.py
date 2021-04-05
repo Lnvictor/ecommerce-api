@@ -1,5 +1,4 @@
 """
-
 Billings Controller
 
 @author Victor Pereira
@@ -13,6 +12,7 @@ from django.shortcuts import get_object_or_404
 
 from ecommerceapi.billings.models import Car, Order
 from ecommerceapi.billings.serializers import OrderSerializer, CarSerializer
+from ecommerceapi.core.models import Product
 
 
 class BillingsController:
@@ -35,6 +35,8 @@ class BillingsController:
         """
         car = get_object_or_404(Car.objects.all(), pk=car_id)
         car.products.add(product_id)
+        car.price += get_object_or_404(Product.objects.all(), pk=product_id).value
+        car.save()
 
     @staticmethod
     def get_status_from_correios(order_id):

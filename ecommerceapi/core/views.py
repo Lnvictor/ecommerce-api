@@ -108,7 +108,6 @@ class ProductViewSet(viewsets.ViewSet):
         """
 
         provider = get_object_or_404(Provider.objects.all(), pk=pk)
-
         serializer = ProductSerializer(
             Product.objects.filter(provider=provider).all(), many=True
         )
@@ -147,4 +146,5 @@ class CsvFileViews(views.APIView):
         serializer = ProductSerializer(data=records, many=True)
         serializer.is_valid()
         serializer.save()
+
         return JsonResponse(records, safe=False, status=201)
