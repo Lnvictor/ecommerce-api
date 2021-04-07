@@ -29,7 +29,7 @@ urlpatterns = [
     path(
         'order/',
         OrderViewSet.as_view(
-            {"get": "list", "post": "transaction"}
+            {"get": "list"}
         ),
         name = "orders"
     ),
@@ -39,5 +39,12 @@ urlpatterns = [
             {"get": "retrieve", "post": "transaction"}
         ),
         name = "order"
+    ),
+    path(
+        'order/finalize/<int:pk>',
+        OrderViewSet.as_view(
+            {"post": "finalize"}
+        ),
+        name="finalize_order"
     )
 ]

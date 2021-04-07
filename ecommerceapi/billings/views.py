@@ -73,11 +73,11 @@ class OrderViewSet(viewsets.ViewSet):
         """
         Finalizes a Billing Order and set the monitoring 
         delivery task queue
-
-        TODO: Test if works
         """
+
+        # TODO: implement payment feature here
         order = get_object_or_404(Order.objects.all(), pk=pk)
-        order_serializer = OrderSerializer(data={"delivery_status": True})
+        order_serializer = OrderSerializer(data={"paid": True})
         order_serializer.is_valid()
         order_serializer.update(order, order_serializer.data)
         

@@ -3,10 +3,6 @@ Billings Controller
 
 @author Victor Pereira
 """
-"""
---> TODO <---
-    Checar rastreio batendo em um endpoint na API dos correios
-"""
 
 from django.shortcuts import get_object_or_404
 
@@ -37,15 +33,3 @@ class BillingsController:
         car.products.add(product_id)
         car.price += get_object_or_404(Product.objects.all(), pk=product_id).value
         car.save()
-
-    @staticmethod
-    def get_status_from_correios(order_id):
-        """
-        TODO:
-            Utilizar o celery para ficar checando o status no correios
-            depois que o pedido for criado
-
-        @param order_id:
-        @return:
-        """
-        pass

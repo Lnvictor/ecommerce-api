@@ -10,7 +10,7 @@ from typing import List
 
 API_URL = "http://www.giantbomb.com/api/games/"
 API_KEY = config("GIANT_BOMB_API_KEY")
-GAMES_DOMAIN = getattr(Domain.objects.filter(name="Games").first(), "id")
+GAMES_DOMAIN = Domain.objects.filter(name="Games").first()
 
 def save_product_data(data: dict) -> bool:
     # import ipdb;ipdb.sset_trace()
