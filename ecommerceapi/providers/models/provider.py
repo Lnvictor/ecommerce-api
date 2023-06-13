@@ -11,6 +11,8 @@ application database calling a function that consumes provider's API
 """
 from django.db import models
 
+from ecommerceapi.core.models.domain import Domain
+
 
 class GiantBombManager(models.Manager):
     def get_queryset(self):
@@ -20,9 +22,7 @@ class GiantBombManager(models.Manager):
 class Provider(models.Model):
     name = models.CharField(max_length=15)
     desc = models.CharField(max_length=150)
-    domains = models.ManyToOneRel(
-        "core:Domain", field_name="domains", related_name="domains", to="domains"
-    )
+    domains = models.ManyToManyField(Domain)
 
     cnpj = models.CharField(max_length=11, unique=True)
     address = models.CharField(max_length=40)
