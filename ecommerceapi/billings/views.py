@@ -15,8 +15,10 @@ from rest_framework.response import Response, responses
 from rest_framework.exceptions import ValidationError
 
 from ecommerceapi.billings.models import Car, Order
+from ecommerceapi.billings.models.cob import Cob
 from ecommerceapi.billings.serializers import CarSerializer, OrderSerializer
 from ecommerceapi.billings.exceptions import NonePkProvided
+from ecommerceapi.billings.serializers.billings_serializer import CobSerializer
 from ecommerceapi.core.commons import create, list, retrieve, update
 from ecommerceapi.billings.controllers import BillingsController
 
@@ -105,3 +107,17 @@ def add_product(request, c_pk: int, pk: int) -> Response:
     BillingsController.add_product(pk, c_pk)
     data = {"Success": "201"}
     return JsonResponse(data=data, status=201)
+
+
+def create_cob(request, order_id: int) -> Response:
+    order = get_object_or_404(Order.objects.first(), pk=order_id)
+    boleto_data = BillingsController.emit_cob_boleto(cpf=order.cpf, value=order.price)
+ 
+    data = {'value': order.price, 'order_id': order.id, 'status': 'approved',
+            'boleto_id': boleto_data.get('id_boleto_individual'),
+            'barcode': boleto_data.get('codigo_barras')}
+    
+    serializer = CobSerializer(data)
+    serializer.is_valid()
+    return serializer.create(serializer.data)
+    

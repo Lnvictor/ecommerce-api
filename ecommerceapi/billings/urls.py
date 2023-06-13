@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CarViewSet, OrderViewSet, add_product
+from .views import CarViewSet, OrderViewSet, add_product, create_cob
 
 app_name = 'billings'
 
@@ -46,5 +46,8 @@ urlpatterns = [
             {"post": "finalize"}
         ),
         name="finalize_order"
-    )
+    ),
+
+    # cob endpoints
+    path('cob/<int:order_id>', create_cob, name="create_cob")
 ]
