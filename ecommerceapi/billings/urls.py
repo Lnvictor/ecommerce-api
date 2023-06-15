@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CarViewSet, OrderViewSet, add_product, create_cob
+from .views import CarViewSet, CobViewSet, OrderViewSet, add_product
 
 app_name = 'billings'
 
@@ -49,5 +49,5 @@ urlpatterns = [
     ),
 
     # cob endpoints
-    path('cob/<int:order_id>', create_cob, name="create_cob")
+    path('cob/<int:pk>', CobViewSet.as_view({"post": "create_cob", "get": "retrieve"}), name="create_cob")
 ]
