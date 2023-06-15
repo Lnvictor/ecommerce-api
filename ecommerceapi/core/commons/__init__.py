@@ -19,7 +19,7 @@ def create(data, Serializer) -> ModelSerializer:
     serializer.is_valid(raise_exception=True)
     serializer.save()
 
-    return serializer
+    return serializer.data
 
 
 def list(queryset, Serializer) -> ModelSerializer:
