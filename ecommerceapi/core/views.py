@@ -1,8 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework import viewsets, status, views
-from rest_framework.parsers import FileUploadParser
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -142,9 +141,11 @@ class CsvFileViews(views.APIView):
                     tmp[header] = attrs[i]
 
             records.append(tmp)
+        
+        if records:
+            serializer = ProductSerializer(data=records, many=True)
+            serializer.is_valid()
+            serializer.save()
 
-        serializer = ProductSerializer(data=records, many=True)
-        serializer.is_valid()
-        serializer.save()
-
-        return JsonResponse(records, safe=False, status=201)
+            return JsonResponse(records, safe=False, status=201)
+        return HttpResponse(status=204)
