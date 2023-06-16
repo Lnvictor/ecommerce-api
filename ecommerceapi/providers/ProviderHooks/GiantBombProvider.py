@@ -10,7 +10,11 @@ from typing import List
 
 API_URL = "http://www.giantbomb.com/api/games/"
 API_KEY = config("GIANT_BOMB_API_KEY")
-GAMES_DOMAIN = Domain.objects.filter(name="Games").first()
+
+
+def __get_games_domain():
+    return Domain.objects.filter(name="Games").first()
+
 
 def save_product_data(data: dict) -> bool:
     # import ipdb;ipdb.sset_trace()
@@ -27,7 +31,7 @@ def save_product_data(data: dict) -> bool:
     request_data = {
         "name": data["name"],
         "desc": data["deck"],
-        "domain": GAMES_DOMAIN,
+        "domain": __get_games_domain(),
         "quantity": 0,
         "value": 0.0,
         "provider": provider,

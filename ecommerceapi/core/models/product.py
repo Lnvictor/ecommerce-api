@@ -1,11 +1,7 @@
 from django.db import models
+from ecommerceapi.core.models.domain import Domain
 
 from ecommerceapi.providers.models import Provider
-
-
-class Domain(models.Model):
-    name = models.CharField(max_length=15, unique=True)
-    desc = models.CharField(max_length=150)
 
 
 class Product(models.Model):

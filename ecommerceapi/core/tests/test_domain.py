@@ -1,27 +1,32 @@
 import json
+from decouple import config
 import pytest
 from django.test import Client
 from django.urls import reverse
+from rest_framework_api_key.models import APIKey
 
 
-def create_sample_domain(name: str, desc: str, client: Client) -> dict:
-    data = {"name": {name}, "desc": {desc}}
-    return client.post(reverse("core:domain"), data=data)
-
-
-@pytest.fixture
-def resp_add_domain(client, db):
-    return create_sample_domain("Fulano", "Teste", client)
+def create_sample_domain(name: str, desc: str, client: Client, api_key: str) -> dict:
+    data = {"name": name, "desc": desc}
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
+    return client.post(reverse("core:domain"), data=json.dumps(data), **headers, content_type='Application/json')
 
 
 @pytest.fixture
-def resp_change_domain(resp_add_domain, client, db):
+def resp_add_domain(client, db, api_key):
+    return create_sample_domain("Fulano", "Teste", client, api_key)
+
+
+@pytest.fixture
+def resp_change_domain(resp_add_domain, client, api_key):
     last_id = resp_add_domain.data.get("id")
     data = {"name": "Beltrano"}
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
 
     resp = client.put(
         reverse("core:domain_by_id", args=[last_id]),
         data=data,
+        **headers,
         content_type="application/json",
     )
 
@@ -29,13 +34,14 @@ def resp_change_domain(resp_add_domain, client, db):
 
 
 @pytest.fixture
-def resp_delete_domain(resp_add_domain, client, db):
+def resp_delete_domain(resp_add_domain, client, db, api_key):
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
     last_id = resp_add_domain.data.get("id")
     resp = client.delete(
-        reverse("core:domain_by_id", args=[last_id]), content_type="application/json"
+        reverse("core:domain_by_id", args=[last_id]), **headers, content_type="application/json"
     )
 
-    return client.get(reverse("core:domain"))
+    return client.get(reverse("core:domain"), **headers)
 
 
 def test_create_domain(resp_add_domain):

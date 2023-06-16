@@ -1,22 +1,14 @@
-"""
---> DONE <--
-    -> Fazer a lógica de adicionar produtos em um determinado carrinho
-    -> Fazer transição de carrinho(Car) pra Pedido(Order) ...
-
---> TODO <--
-"""
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
-from django.urls import reverse
 from rest_framework import viewsets
-from rest_framework.response import Response, responses
+from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 
 from ecommerceapi.billings.models import Car, Order
+from ecommerceapi.billings.models.cob import Cob
 from ecommerceapi.billings.serializers import CarSerializer, OrderSerializer
-from ecommerceapi.billings.exceptions import NonePkProvided
+from ecommerceapi.billings.serializers.billings_serializer import CobSerializer
 from ecommerceapi.core.commons import create, list, retrieve, update
 from ecommerceapi.billings.controllers import BillingsController
 
@@ -75,7 +67,6 @@ class OrderViewSet(viewsets.ViewSet):
         delivery task queue
         """
 
-        # TODO: implement payment feature here
         order = get_object_or_404(Order.objects.all(), pk=pk)
         order_serializer = OrderSerializer(data={"paid": True})
         order_serializer.is_valid()
@@ -83,13 +74,29 @@ class OrderViewSet(viewsets.ViewSet):
         
         return Response(data={"message": "Order finalized successfully"})
 
-    # There is no update
-    # def update(self, request, pk: int=None):
-    #     return Response(
-    #         update(
-    #             request.data, Order.objects.all(), pk, OrderSerializer
-    #         ).data
-    #     )
+
+class CobViewSet(viewsets.ModelViewSet):
+    class Meta:
+        model = Cob
+    
+    serializer_class = CobSerializer
+
+    def get_queryset(self):
+        return Cob.objects.all()
+
+    def create_cob(self, request, pk: int) -> Response:
+        order = get_object_or_404(Order, pk=pk)
+        boleto_data = BillingsController.emit_cob_boleto(cpf=order.cpf, value=order.price)
+    
+        data = {'value': order.price, 'order_id': order, 'status': 'approved',
+                'boleto_id': boleto_data.get('id_boleto_individual'),
+                'barcode': boleto_data.get('codigo_barras')}
+
+        serializer = CobSerializer(data=data)
+        serializer.is_valid()
+        serializer.create(serializer.data)
+        data['order_id'] = data['order_id'].pk
+        return JsonResponse(data=data, status=201)
 
 
 @csrf_exempt

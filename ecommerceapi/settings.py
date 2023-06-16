@@ -134,3 +134,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# ITAU SETTINGS
+ITAU_API_CLIENT_ID = config('ITAU_API_CLIENT_ID')
+ITAU_API_CLIENT_SECRET = config('ITAU_API_CLIENT_SECRET')
+ITAU_API_BASE_URL = config('ITAU_API_BASE_URL')

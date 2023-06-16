@@ -5,9 +5,11 @@ Billings Controller
 """
 
 from django.shortcuts import get_object_or_404
+import requests
 
-from ecommerceapi.billings.models import Car, Order
-from ecommerceapi.billings.serializers import OrderSerializer, CarSerializer
+from ecommerceapi import settings
+from ecommerceapi.billings.models import Car
+from ecommerceapi.billings.utils import _get_itau_request_headers, _get_itau_request_payload
 from ecommerceapi.core.models import Product
 
 
@@ -33,3 +35,13 @@ class BillingsController:
         car.products.add(product_id)
         car.price += get_object_or_404(Product.objects.all(), pk=product_id).value
         car.save()
+    
+    @staticmethod
+    def emit_cob_boleto(cpf: str, value: float) -> dict:
+        headers = _get_itau_request_headers()
+        payload = _get_itau_request_payload(cpf=cpf)
+        emit_boleto_url = f'{settings.ITAU_API_BASE_URL}/sandboxapi/itau-ep9-gtw-cash-management-ext-v2/v2/boletos'
+
+        response = requests.post(url=emit_boleto_url, json=payload, headers=headers)
+
+        return response.json()['dado_boleto']['dados_individuais_boleto'][0]
