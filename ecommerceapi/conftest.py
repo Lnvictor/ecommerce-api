@@ -10,3 +10,8 @@ def api_key():
         _, key = APIKey.objects.create_key(name="my-remote-service")
     
     return key
+
+
+@pytest.fixture
+def http_request_headers(api_key):
+    return {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
