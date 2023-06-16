@@ -2,14 +2,12 @@ import pytest
 from django.urls import reverse
 
 from ecommerceapi.core.tests.test_domain import create_sample_domain
-from rest_framework_api_key.models import APIKey
 
 
 @pytest.fixture
-def resp_add_product(client, db):
-    api_key, key = APIKey.objects.create_key(name="my-remote-service")
-    headers = {'HTTP_AUTHORIZATION': f'Api-Key {key}'}
-    domain = create_sample_domain("Ciclano", "test", client)
+def resp_add_product(client, db, api_key):
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
+    domain = create_sample_domain("Ciclano", "test", client, api_key)
 
     data = {
         "name": "Iphone 10",
@@ -25,9 +23,8 @@ def resp_add_product(client, db):
 
 
 @pytest.fixture
-def resp_change_product(resp_add_product, client, db):
-    api_key, key = APIKey.objects.create_key(name="my-remote-service")
-    headers = {'HTTP_AUTHORIZATION': f'Api-Key {key}'}
+def resp_change_product(resp_add_product, client, db, api_key):
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
     data = {"desc": "test"}
 
     return client.put(
@@ -38,9 +35,8 @@ def resp_change_product(resp_add_product, client, db):
 
 
 @pytest.fixture
-def resp_delete_product(resp_add_product, client, db):
-    api_key, key = APIKey.objects.create_key(name="my-remote-service")
-    headers = {'HTTP_AUTHORIZATION': f'Api-Key {key}'}
+def resp_delete_product(resp_add_product, client, db, api_key):
+    headers = {'HTTP_AUTHORIZATION': f'Api-Key {api_key}'}
 
     client.delete(
         reverse("core:product_by_id", args=[resp_add_product.data.get('id')]),
